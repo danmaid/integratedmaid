@@ -9,3 +9,10 @@ new Vue({
   router,
   render: h => h(App)
 }).$mount('#app')
+
+export interface Hierarchy {
+  digest: string;
+  text?: string;
+  children?: Hierarchy[];
+  parent?: Hierarchy;
+}

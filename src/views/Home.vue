@@ -1,18 +1,38 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <treemap v-if="hierarchy" :value="hierarchy" />
   </div>
 </template>
 
-<script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+<script lang="ts">
+import Vue from 'vue'
+import Treemap from '../components/Treemap.vue'
 
-export default {
-  name: 'Home',
-  components: {
-    HelloWorld
+export default Vue.extend({
+  components: { Treemap },
+  data() {
+    return {
+      hierarchy: undefined
+    }
+  },
+  mounted() {
+    this.fetchHierarchy()
+  },
+  methods: {
+    async fetchHierarchy(url = process.env.VUE_APP_HIERARCHY_DATA) {
+      try {
+        const res = await fetch(url)
+        this.hierarchy = await res.json()
+      } catch (err) {
+        alert(`階層データを取得できません。\n${err}`)
+      }
+    }
   }
-}
+})
 </script>
+
+<style scoped>
+.home {
+  height: 100%;
+}
+</style>
