@@ -23,31 +23,40 @@ export default Vue.extend({
     }
   },
   computed: {
-    digests() {
-      function flatten({ children, digest }: Hierarchy): string[] {
+    ids() {
+      function flatten({ children, hash }: Hierarchy): string[] {
         return children
-          ? children.reduce<string[]>((a, c) => a.concat(flatten(c)), [digest])
-          : [digest]
+          ? children.reduce<string[]>((a, c) => a.concat(flatten(c)), [hash])
+          : [hash]
       }
       return flatten(this.value)
     },
     labels() {
+      function flatten({ children, label }: Hierarchy): string[] {
+        if (!label) { label = '' }
+        return children
+          ? children.reduce<string[]>((a, c) => a.concat(flatten(c)), [label])
+          : [label]
+      }
+      return flatten(this.value)
+    },
+    texts() {
       function flatten({ children, text }: Hierarchy): string[] {
         if (!text) { text = '' }
         return children
-          ? children.reduce<string[]>((a, c) => a.concat(flatten(c)), [text])
-          : [text]
+          ? children.reduce<string[]>((a, c) => a.concat(flatten(c)), ['<div>' + text + '</div>'])
+          : ['<div>' + text + '</div>']
       }
       return flatten(this.value)
     },
     parents() {
       const root = this.value
-      function flatten({ children, digest }: Hierarchy): string[] {
+      function flatten({ children, hash }: Hierarchy): string[] {
         return children
           ? children.reduce<string[]>((a, c) => a.concat(flatten(c)
             .map(v => {
-              if (v === root.digest) return ''
-              if (v === '') return digest
+              if (v === root.hash) return ''
+              if (v === '') return hash
               return v
             })), [''])
           : ['']
@@ -58,8 +67,9 @@ export default Vue.extend({
       return [{
         type: 'treemap',
         maxdepth: this.maxdepth,
-        ids: this.digests,
+        ids: this.ids,
         labels: this.labels,
+        customdata: this.texts,
         parents: this.parents
       }]
     }
@@ -74,7 +84,7 @@ export default Vue.extend({
   },
   methods: {
     render(data: {}[]) {
-      Plotly.newPlot(this.$refs.plotly, data)
+      Plotly.newPlot(this.$refs.plotly, data, null, { displaylogo: false })
     }
   }
 })

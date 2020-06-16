@@ -11,8 +11,9 @@ new Vue({
 }).$mount('#app')
 
 export interface Hierarchy {
-  digest: string;
+  hash: string;
   text?: string;
+  label?: string;
   children?: Hierarchy[];
   parent?: Hierarchy;
 }
